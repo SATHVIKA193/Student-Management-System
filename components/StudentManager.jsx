@@ -2,6 +2,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { validateStudent } from "@/lib/validation";
 
 async function readApiResponse(response) {
     const contentType = response.headers.get("content-type") || "";
@@ -41,6 +42,8 @@ export default function StudentManager() {
         department: "",
         year: ""
     });
+
+    const [errors, setErrors] = useState({});
 
     // Store the ID of the student being edited
     const [editingId, setEditingId] = useState(null);
@@ -119,7 +122,16 @@ export default function StudentManager() {
             text: ""
         });
 
-        setSaving(true);
+      // Validate all form fields
+    const validationErrors = validateStudent(form);
+
+    setErrors(validationErrors);
+
+    // Stop submission if validation fails
+    if (Object.keys(validationErrors).length > 0) {
+        return;
+    }
+    setSaving(true);
 
         try {
 
@@ -182,7 +194,8 @@ export default function StudentManager() {
             department: "",
             year: ""
         });
-
+        
+        setErrors({});
         setEditingId(null);
     }
 
@@ -323,6 +336,12 @@ export default function StudentManager() {
                                 required
                                 maxLength={80}
                             />
+                            
+                            {errors.name && (
+                            <p className="text-red-500 text-sm">
+                            {errors.name}
+                            </p>
+                            )}
                         </div>
 
                         <div className="form-group">
@@ -336,6 +355,11 @@ export default function StudentManager() {
                                 onChange={handleChange}
                                 required
                             />
+                            {errors.email && (
+                            <p className="text-red-500 text-sm">
+                            {errors.email}
+                            </p>
+                            )}
                         </div>
 
                         <div className="form-group">
@@ -351,6 +375,11 @@ export default function StudentManager() {
                                 maxLength={10}
                                 required
                             />
+                            {errors.phone && (
+                            <p className="text-red-500 text-sm">
+                            {errors.phone}
+                            </p>
+                            )}
                         </div>
 
                         <div className="form-group">
@@ -384,6 +413,11 @@ export default function StudentManager() {
                                     Commerce
                                 </option>
                             </select>
+                            {errors.department && (
+                            <p className="text-red-500 text-sm">
+                            {errors.department}
+                            </p>
+                            )}
                         </div>
 
                         <div className="form-group">
@@ -401,6 +435,11 @@ export default function StudentManager() {
                                 <option value="3">Third Year</option>
                                 <option value="4">Fourth Year</option>
                             </select>
+                            {errors.year && (
+                            <p className="text-red-500 text-sm">
+                            {errors.year}
+                            </p>
+                            )}
                         </div>
 
                     </div>
